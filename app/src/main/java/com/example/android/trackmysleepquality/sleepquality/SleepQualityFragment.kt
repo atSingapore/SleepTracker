@@ -17,12 +17,17 @@
 package com.example.android.trackmysleepquality.sleepquality
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.android.trackmysleepquality.R
+import com.example.android.trackmysleepquality.database.SleepDatabase
 import com.example.android.trackmysleepquality.databinding.FragmentSleepQualityBinding
 
 /**
@@ -46,6 +51,42 @@ class SleepQualityFragment : Fragment() {
                 inflater, R.layout.fragment_sleep_quality, container, false)
 
         val application = requireNotNull(this.activity).application
+
+        // Get the arguments that came with the navigation
+        // They come from SleepQualityFragmentArgs and we get them from the bundle
+        val arguments = SleepQualityFragmentArgs.fromBundle(arguments!!)
+
+        // Get the datasource
+        val dataSource = SleepDatabase.getInstance(application).sleepDatabaseDao
+
+        // Create ViewModel Factory (passing in the data source and sleepnight key)
+        val viewModelFactory = SleepQualityViewModelFactory(arguments.sleepNightKey, dataSource)
+
+        // Get the SleepQualityViewModel reference
+        val sleepQualityViewModel = ViewModelProvider(this, viewModelFactory).get(SleepQualityViewModel::class.java)
+
+        // Add SleepQualityViewModel to the binding object
+        binding.sleepQualityViewModel = sleepQualityViewModel
+
+        // Add the observer (don't forget to add the variable for SleepQualityViewModel to the <data> block
+        sleepQualityViewModel.navigateToSleepTracker.observe(viewLifecycleOwner,  Observer {
+            if (it == true) { // Observed state is true.
+
+                Log.i("SleepQualityViewModel", "it = true")
+
+                this.findNavController().navigate(
+                        SleepQualityFragmentDirections.actionSleepQualityFragmentToSleepTrackerFragment())
+                sleepQualityViewModel.doneNavigating()
+            } else
+            {
+                Log.i("SleepQualityViewModel", "it is not true")
+            }
+        })
+
+
+        // Add a click handler to each image
+
+
 
         return binding.root
     }

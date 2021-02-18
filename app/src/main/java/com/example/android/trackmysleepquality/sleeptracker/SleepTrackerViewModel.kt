@@ -17,10 +17,7 @@
 package com.example.android.trackmysleepquality.sleeptracker
 
 import android.app.Application
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
 import com.example.android.trackmysleepquality.database.SleepNight
 import com.example.android.trackmysleepquality.formatNights
@@ -46,6 +43,19 @@ class SleepTrackerViewModel(
     // Define a mapping function as calling formatNights, giving it nights and access to our string resources
     val nightsString = Transformations.map(nights) { nights ->
         formatNights(nights, application.resources)
+    }
+
+    // Setup livedata that changes when we want to navigate
+    // Then tells the view model when it's done, which resets the state variable
+    private val _navigateToSleepQuality = MutableLiveData<SleepNight>()
+
+    val navigateToSleepQuality: LiveData<SleepNight>
+        get() = _navigateToSleepQuality
+
+    // Immediately after navigating, we want to reset the navigation variable
+    fun doneNavigating()
+    {
+        _navigateToSleepQuality.value = null
     }
 
     // Initialize tonight
@@ -108,7 +118,6 @@ class SleepTrackerViewModel(
         // Need to use a coroutine because everything here will be time consuming
         viewModelScope.launch {
 
-
             // return@label is used for specifying which function among several nested ones the statement returns from
             // In this case, we are specifying to return from launch
             val oldNight = tonight.value ?: return@launch
@@ -118,6 +127,10 @@ class SleepTrackerViewModel(
 
             // Call update with the night
             update(oldNight)
+
+            // We need to trigger this navigation
+            _navigateToSleepQuality.value = oldNight
+
         }
     }
 

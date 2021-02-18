@@ -26,12 +26,20 @@ import com.example.android.trackmysleepquality.database.SleepDatabaseDao
  *
  * Provides the SleepDatabaseDao and context to the ViewModel.
  */
+
+// From DAO our view model knows how to access the DB but haven't created DB reference because
+// don't need entire DB object, just the DAO that accesses the object we need
+// but need to have the Database when ViewModel is created, so instead of ViewModel creating DB dependency,
+// ViewModelFactory provides dependency to VM
+
+//ViewModelFactory provides the dependencies to the ViewModel
 class SleepTrackerViewModelFactory(
         private val dataSource: SleepDatabaseDao,
         private val application: Application) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
 
-    // Overrides create and checks if there is a SleepTrackerViewModel class available and if so, returns an instance, otherwise throws an exception
+    // Overrides create and checks if there is a SleepTrackerViewModel class available
+    // and if so, returns an instance, otherwise throws an exception
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SleepTrackerViewModel::class.java)) {
             return SleepTrackerViewModel(dataSource, application) as T
@@ -40,8 +48,5 @@ class SleepTrackerViewModelFactory(
     }
 }
 
-// From DAO our view model knows how to access the DB but haven't created DB reference b/`false
-// don't need entire DB object, just the DAO that accesses the object we need
-// but need to have DB when ViewModel is created to instead of VM create DB dependency,
-// ViewModelFActory provides dependence to VM
+
 
