@@ -83,11 +83,6 @@ class SleepQualityFragment : Fragment() {
             }
         })
 
-
-        // Add a click handler to each image
-
-
-
         return binding.root
     }
 }

@@ -26,7 +26,7 @@ import com.example.android.trackmysleepquality.database.SleepDatabaseDao
 // but need to have the Database when ViewModel is created, so instead of ViewModel creating DB dependency,
 // ViewModelFactory provides dependence to VM
 
-// ViewModelFactory provides the dependencies to the ViewModel
+// ViewModelFactory provides the dependencies to the ViewModel (dependency injection)
 class SleepQualityViewModelFactory(
         private val sleepNightKey: Long,
         private val dataSource: SleepDatabaseDao) : ViewModelProvider.Factory {

@@ -16,13 +16,10 @@
 
 package com.example.android.trackmysleepquality.sleepquality
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.android.trackmysleepquality.database.SleepDatabaseDao
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 // Need to record the sleep quality
 // Then navigate back to sleep tracker fragment
@@ -30,10 +27,14 @@ import kotlinx.coroutines.withContext
 // Need a ViewModel to go with the sleep quality
 // A ViewModelFactory
 // And to update the fragment
-
+/**
+ * ViewModel for SleepQualityFragment.
+ *
+ * @param sleepNightKey The key of the current night we are working on.
+ */
 // Passing in the sleepnight key we got from the navigation
 // Passing in the database from the factory
-class SleepQualityViewModel(private val  sleepNightKey: Long = 0L, val database: SleepDatabaseDao) : ViewModel()
+class SleepQualityViewModel(private val sleepNightKey: Long = 0L, val database: SleepDatabaseDao) : ViewModel()
 {
     // Needed to navigate back to the SleepTrackerFragment after recording the quality
     // Create the event variable with the backend property

@@ -40,9 +40,32 @@ class SleepTrackerViewModel(
     // Will hold all nights from the database
     private var nights = database.getAllNights()
 
+    private var _showSnackBarEvent = MutableLiveData<Boolean>()
+
+    val showSnackBarEvent: LiveData<Boolean>
+    get() = _showSnackBarEvent
+
     // Define a mapping function as calling formatNights, giving it nights and access to our string resources
     val nightsString = Transformations.map(nights) { nights ->
         formatNights(nights, application.resources)
+    }
+
+    // State variables (the state of the variables depend on the state of tonight)
+    val startButtonVisible = Transformations.map(tonight) {
+
+        // tonight is null at the beginning - so we want the start button visible
+        null == it
+    }
+
+    val stopButtonVisible = Transformations.map(tonight) {
+        // if tonight has a value, the stop button should be visible
+        null != it
+    }
+
+    val clearButtonVisible = Transformations.map(nights)
+    {
+        // should only be visible if there are nights to clear
+        it?.isNotEmpty()
     }
 
     // Setup livedata that changes when we want to navigate
@@ -144,6 +167,7 @@ class SleepTrackerViewModel(
         viewModelScope.launch {
             clear()
             tonight.value = null
+            _showSnackBarEvent.value = true
         }
     }
 
@@ -151,6 +175,10 @@ class SleepTrackerViewModel(
         database.clear()
     }
 
+    fun doneShowingSnackBar()
+    {
+        _showSnackBarEvent.value = false
+    }
 
 }
 
